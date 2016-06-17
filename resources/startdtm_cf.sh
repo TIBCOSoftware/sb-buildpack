@@ -1,3 +1,4 @@
+set -x
 ADMINISTRATOR=$TIBCO_EP_HOME/distrib/tibco/bin/epadministrator
 NODE_INSTALL_PATH=$HOME/deploy/nodes
 export _JAVA_OPTIONS=-DTIBCO_EP_HOME=$TIBCO_EP_HOME

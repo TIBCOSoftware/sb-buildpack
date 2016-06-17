@@ -49,7 +49,7 @@ unzip $BUILD_DIR/$DTM_TARBALL -d $BUILD_DIR
 cp $BUILDPACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
 chmod 755 $BUILD_DIR/startdtm_cf.sh
 
-cp $BUILDPACK_DIR/resources/$SB_APP_FRAGMENT $SB_APP_DIR
+cp $BUILD_DIR/$SB_APP_FRAGMENT $SB_APP_DIR
 cd $HOME
 
 exit 0
