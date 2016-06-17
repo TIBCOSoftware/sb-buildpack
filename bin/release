@@ -4,5 +4,5 @@
 cat <<EOF
 ---
 default_process_types:
-    web: export TIBCO_EP_HOME=$HOME; exec ./startdtm_cf.sh
+    web: exec ./startdtm_cf.sh topologies
 EOF
