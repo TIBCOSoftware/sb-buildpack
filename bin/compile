@@ -44,7 +44,7 @@ download_extract_sb ()
     fi
 }
 
-unzip $DTM_TARBALL -d $BUILD_DIR
+unzip $BUILD_DIR/$DTM_TARBALL -d $BUILD_DIR
 
 cp $BUILDPACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
 chmod 755 $BUILD_DIR/startdtm_cf.sh
