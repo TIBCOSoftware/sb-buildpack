@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# any failure in a pipe is a problem
+set -o pipefail
+## do not tolerate unset variables
+set -o nounset
+# don't try to remember where things are
+set +o hashall
+
+set -o errtrace
+
+## show the environment we are building in
+BUILD_DIR=$1 
+STAGE_DIR=$(dirname $BUILD_DIR) 
+CACHE_DIR=$2 
+START_DIR=`pwd` 
+BUILDPACK_DIR=$(dirname `dirname $0`) 
+SB_APP_DIR=$BUILD_DIR/$SB_APP_NAME
+
+mkdir -p $BUILD_DIR $CACHE_DIR $BUILD_DIR/$SB_APP_FRAGMENT
+echo " Environment" 
+echo " - BUILD_DIR=$BUILD_DIR" 
+echo " - STAGE_DIR=$STAGE_DIR" 
+echo " - CACHE_DIR=$CACHE_DIR" 
+echo " - BUILDPACK_DIR=$BUILDPACK_DIR" 
+
+
+download_extract_sb ()
+{
+    DTM_TARBALL_MD5SUM=`curl $DTM_TARBALL_URL/$DTM_TARBALL.md5sum`
+    if [ -f $CACHE_DIR\platform_linuxx86_64-3.0.0-SNAPSHOT.zip.md5sum ]; then
+        CACHE_DTM_TARBALL_MD5SUM=`cat $CACHE_DIR\platform_linuxx86_64-3.0.0-SNAPSHOT.zip.md5sum`
+        if [ "$CACHE_DTM_TARBALL_MD5SUM" != "$DTM_TARBALL_MD5SUM" ]; then
+            curl -o $CACHE_DIR/$DTM_TARBALL $DTM_TARBALL_URL/$DTM_TARBALL
+            echo $DTM_TARBALL_MD5SUM > $CACHE_DIR/$DTM_TARBALL.md5sum
+            unzip $CACHE_DIR/$DTM_TARBALL -d $BUILD_DIR
+        else
+            echo "$DTM_TARBALL_URL/$DTM_TARBALL md5sum $DTM_TARBALL_MD5SUM matches local cache $CACHE_DIR\$DTM_TARBALL, not downloading."
+        fi
+    else
+        curl -o $CACHE_DIR/$DTM_TARBALL $DTM_TARBALL_URL/$DTM_TARBALL
+        echo $DTM_TARBALL_MD5SUM > $CACHE_DIR/$DTM_TARBALL.md5sum
+        unzip $CACHE_DIR/$DTM_TARBALL -d $BUILD_DIR
+    fi
+}
+
+cp $BUILD_PACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
+chmod 755 $BUILD_DIR/startdtm_cf.sh
+
+cp $BUILD_PACK_DIR/resources/$SB_APP_FRAGMENT $SB_APP_DIR
+cd $HOME
+
+exit 0

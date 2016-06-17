@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# bin/detect SB Application/FRAGMENT zip file
+SB_APP_DIR = $1
+manifest=META-INF/MANIFEST.MF
+type_key=TIBCO-EP-Fragment-Type
+
+if [ -f $SB_APP_DIR/$SB_APP_FRAGMENT ]; then
+    echo -n "Found $SB_APP_DIR/$SB_APP_FRAGMENT, checking fragment type..."
+    type=`unzip -p $SB_APP_DIR/$SB_APP_FRAGMENT  META-INF/MANIFEST.MF | grep $type_key | cut -d ':' -f 2`
+    if [ $? -eq 0 ]
+        case $type in 
+            ep-java-fragment|ep-eventflow-fragment|ep-application)
+                echo "$type recognized. Continue application startup."
+            *)
+                echo "$type NOT recognized."
+                exit 3
+        esac
+    else
+        echo "$type_key or $manifest file not found in $SB_APP_DIR/$SB_APP_FRAGMENT"
+        exit 2
+    fi
+else
+  echo "No $SB_APP_DIR/$SB_APP_FRAGMENT file found!" && exit 1
+fi
