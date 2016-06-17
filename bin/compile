@@ -17,7 +17,7 @@ START_DIR=`pwd`
 BUILDPACK_DIR=$(dirname `dirname $0`) 
 SB_APP_DIR=$BUILD_DIR/$SB_APP_NAME
 
-mkdir -p $BUILD_DIR $CACHE_DIR $BUILD_DIR/$SB_APP_FRAGMENT
+mkdir -p $BUILD_DIR $CACHE_DIR $BUILD_DIR/$SB_APP_NAME
 echo " Environment" 
 echo " - BUILD_DIR=$BUILD_DIR" 
 echo " - STAGE_DIR=$STAGE_DIR" 
