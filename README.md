@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cloud Foundry Java Buildpack
 [![Build Status](https://travis-ci.org/cloudfoundry/java-buildpack.svg?branch=master)](https://travis-ci.org/cloudfoundry/java-buildpack)
 [![Dependency Status](https://gemnasium.com/cloudfoundry/java-buildpack.svg)](https://gemnasium.com/cloudfoundry/java-buildpack)
@@ -151,3 +152,6 @@ This buildpack is released under version 2.0 of the [Apache License][].
 [Running Cloud Foundry locally]: http://docs.cloudfoundry.org/deploying/run-local.html
 [Spring Boot]: http://projects.spring.io/spring-boot/
 # sb-buildpack
+=======
+# sb-buildpack
+>>>>>>> f299be4f05041445bcede38317baf396a626f0fb
