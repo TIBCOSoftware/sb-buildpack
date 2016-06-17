@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 # any failure in a pipe is a problem
 set -o pipefail
 ## do not tolerate unset variables
@@ -43,7 +44,9 @@ download_extract_sb ()
     fi
 }
 
-cp $BUILD_PACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
+unzip $DTM_TARBALL -d $BUILD_DIR
+
+cp $BUILDPACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
 chmod 755 $BUILD_DIR/startdtm_cf.sh
 
 cp $BUILD_PACK_DIR/resources/$SB_APP_FRAGMENT $SB_APP_DIR
