@@ -63,11 +63,6 @@ download_extract_jdk ()
 
     tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $BUILD_DIR
 
-    if [ "$?" == "0" ]; then
-        echo "Setting JAVA_HOME to $HOME/jdk$MAJOR.$MINOR.0_$REV"
-        export JAVA_HOME=$HOME/jdk$MAJOR.$MINOR.0_$REV
-    fi
-
 }
 
 download_extract_jdk
