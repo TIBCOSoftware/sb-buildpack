@@ -4,5 +4,5 @@
 cat <<EOF
 ---
 default_process_types:
-    web: export JAVA_HOME=/home/vcap/app/jdk1.8.0_91;export SUBSTITUTIONS=GOLDYLOCKS_EPPORT=${PORT}; exec ./startdtm_cf.sh topologies
+    web: export JAVA_HOME=/home/vcap/app/jdk1.8.0_91;export SUBSTITUTIONS=GOLDYLOCKS_EPPORT=$PORT; exec ./startdtm_cf.sh topologies
 EOF
