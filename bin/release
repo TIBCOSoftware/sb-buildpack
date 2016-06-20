@@ -4,5 +4,5 @@
 cat <<EOF
 ---
 default_process_types:
-    web: exec ./startdtm_cf.sh topologies
+    web: export JAVA_HOME=/home/vcap/jdk1.8.0_91;exec ./startdtm_cf.sh topologies
 EOF
