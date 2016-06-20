@@ -44,12 +44,38 @@ download_extract_sb ()
     fi
 }
 
-unzip $BUILD_DIR/$DTM_TARBALL -d $BUILD_DIR
+download_extract_jdk ()
+{
+
+    MAJOR=1
+    MINOR=8
+    REV=91
+
+    # snippet from https://gist.github.com/P7h/9741922
+    ## Latest JDK8 version released on 19th April, 2016: JDK8u91
+    BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91
+
+    ## JDK_VERSION=${BASE_URL_8: -8}
+    JDK_VERSION=`echo $BASE_URL_8 | rev | cut -d "/" -f1 | rev`
+    PLATFORM=-linux-x64.tar.gz
+
+    wget -c -O "$CACHE_DIR/$JDK_VERSION$PLATFORM" --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" "${BASE_URL_8}${PLATFORM}"
+
+    tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $BUILD_DIR
+
+    if [ "$?" == "0" ]; then
+        echo "Setting JAVA_HOME to $HOME/jdk$MAJOR.$MINOR.0_$REV"
+        export JAVA_HOME=$HOME/jdk$MAJOR.$MINOR.0_$REV
+    fi
+
+}
+
+download_extract_jdk
+unzip -q $BUILD_DIR/$DTM_TARBALL -d $BUILD_DIR
 
 cp $BUILDPACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
 chmod 755 $BUILD_DIR/startdtm_cf.sh
 
-cp $BUILD_DIR/$SB_APP_FRAGMENT $SB_APP_DIR
 cd $HOME
 
 exit 0
