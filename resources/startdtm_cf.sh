@@ -59,7 +59,7 @@ if [ ! -d "$NODE_INSTALL_PATH" ]; then
 fi
 
 # Install node A in cluster X - administration port set to 5556
-$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=5556 $NODE_NAME $SB_APP_FRAGMENT $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=DEVELOPMENT
+$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=5556 $NODE_NAME $SB_APP_FRAGMENT $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=DEVELOPMENT webport=8080
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then
@@ -71,6 +71,7 @@ else
     exit_code=$?
     if [ $exit_code -eq 0 ]; then
         echo "Node started successfully."
+        $ADMINISTRATOR adminport=5556 display node
         trap "echo Container stop requested ; break" TERM INT
         while true
         do
