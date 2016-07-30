@@ -45,7 +45,7 @@ if [ ! -z "$SB_APP_FRAGMENT" ]; then
 fi
 
 if [ ! -z "$SUBSTITUTIONS" ]; then
-    SUBSTITUTIONS=substitutions=GOLDYLOCKS_EPPORT=$PORT
+    SUBSTITUTIONS=substitutions=GOLDYLOCKS_EPPORT=10000
 fi
 
 if [ ! -z "$2" ]; then
