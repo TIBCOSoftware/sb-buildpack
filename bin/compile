@@ -65,7 +65,12 @@ download_extract_jdk ()
 }
 
 download_extract_jdk
-unzip -q $BUILD_DIR/$SB_TARBALL -d $BUILD_DIR
+if [ ! -z $SB_TARBALL_URL ]; then
+    download_extract_sb
+else
+    unzip -q $BUILD_DIR/$SB_TARBALL -d $BUILD_DIR
+fi
+
 
 if [ "$?" != "0" ]; then
     exit $?
