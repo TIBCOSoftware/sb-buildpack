@@ -4,7 +4,7 @@ if [ ! -z "$TIBCO_EP_HOME" ]; then
   TIBCO_EP_HOME=$HOME
 fi
 
-ADMINISTRATOR=$TIBCO_EP_HOME/distrib/tibco/bin/epadministrator
+ADMINISTRATOR=$TIBCO_EP_HOME/distrib/tibco/bin/epadmin
 NODE_INSTALL_PATH=$HOME/deploy/nodes
 SB_APP_DIR=$HOME
 export _JAVA_OPTIONS=-DTIBCO_EP_HOME=$TIBCO_EP_HOME
