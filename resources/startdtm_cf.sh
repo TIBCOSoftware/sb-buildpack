@@ -50,7 +50,9 @@ if [ ! -z "$SB_APP_FRAGMENT" ]; then
     SB_APP_FRAGMENT="application=$SB_APP_DIR/$SB_APP_FRAGMENT"
 fi
 
-if [ -z "$SUBSTITUTIONS" ]; then
+if [ ! -z "$SUBSTITUTIONS" ]; then
+    SUBSTITUTIONS=substitutions="$SUBSTITUTIONS"
+else
     SUBSTITUTIONS=substitutions=GOLDYLOCKS_EPPORT=10000
 fi
 
