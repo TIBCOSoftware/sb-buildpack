@@ -1,4 +1,9 @@
 set -x
+echo "List Diego Cell CF env vars"
+echo "CF_INSTANCE_INTERNAL_IP=$CF_INSTANCE_INTERNAL_IP"
+echo "CF_INSTANCE_PORT=$CF_INSTANCE_PORT"
+echo "CF_INSTANCE_PORTS=$CF_INSTANCE_PORTS"
+
 # check if TIBCO_EP_HOME is present
 if [ ! -z "$TIBCO_EP_HOME" ]; then
   TIBCO_EP_HOME=$HOME
