@@ -1,9 +1,22 @@
 ---
 applications:
-- name: tibco.bwce.sample.http 
-  memory: 1024M
-  path: tibco.bwce.sample.http_1.0.0.ear
+- name: ${SB_APP_NAME}
+  memory: 4GB
+  disk_quota: 2GB
   timeout: 180
+  instances: ${CF_INSTANCES}
+  buildpack: ${CF_BUILDPACK_URL}
+  domain: ${CF_DOMAIN}
   random-route: true
+  host: ${nodename1}
   env: 
-        RESPONSE_MESSAGE: Hello World!!
+      SB_TARBALL: ${SB_TARBALL}
+      SB_TARBALL_URL: ${SB_TARBALL_URL}
+      SB_APP_FILE: ${SB_APP_FILE}
+      SB_APP_NAME: ${SB_APP_NAME}
+      NODE_CONFIG: ${NODE_CONFIG}.conf
+      NODENAME: ${nodename1}.${ClusterName}
+      BUILDTYPE: DEVELOPMENT
+      SUBSTITUTIONS: GOLDYLOCKS_EPPORT=10000
+      TIBCO_EP_HOME: ${TIBCO_EP_HOME}
+
