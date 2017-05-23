@@ -52,7 +52,7 @@ download_extract_jdk ()
 
     # snippet from https://gist.github.com/P7h/9741922
     ## Latest JDK8 version released in April 2017: JDK8u131
-    BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/jdk-8u131
+    BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131
 
     ## JDK_VERSION=${BASE_URL_8: -8}
     JDK_VERSION=`echo $BASE_URL_8 | rev | cut -d "/" -f1 | rev`
