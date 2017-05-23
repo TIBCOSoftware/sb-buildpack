@@ -78,7 +78,7 @@ else
     $ADMINISTRATOR adminport=5556 start node
     exit_code=$?
     
-    if $exit_code ; then
+    if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
         while true;do sleep 1; done
     else
