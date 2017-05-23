@@ -46,8 +46,8 @@ else
     NODE_NAME="nodename=$NODENAME"
 fi
 
-if [ ! -z "$SB_APP_FRAGMENT" ]; then
-    SB_APP_FRAGMENT="application=$SB_APP_DIR/$SB_APP_FRAGMENT"
+if [ ! -z "$SB_APP_FILE" ]; then
+    SB_APP_FILE="application=$SB_APP_DIR/$SB_APP_FILE"
 fi
 
 if [ ! -z "$SUBSTITUTIONS" ]; then
@@ -67,7 +67,7 @@ if [ ! -d "$NODE_INSTALL_PATH" ]; then
 fi
 
 # Install node A in cluster X - administration port set to 5556
-$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=5556 $NODE_NAME $SB_APP_FRAGMENT $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=DEVELOPMENT webport=8080
+$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=5556 $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=DEVELOPMENT webport=8080
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then
