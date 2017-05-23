@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# bin/detect SB Application/FRAGMENT zip file
+# bin/detect SB Application/Fragment zip file
 set -x
 SB_APP_DIR=$1
 manifest=META-INF/MANIFEST.MF
 type_key=TIBCO-EP-Fragment-Type
 
-if [ -f $SB_APP_DIR/$SB_APP_FRAGMENT ]; then
-    echo -n "Found $SB_APP_DIR/$SB_APP_FRAGMENT, checking fragment type..."
-    type=`unzip -p $SB_APP_DIR/$SB_APP_FRAGMENT  META-INF/MANIFEST.MF | grep $type_key | cut -d ':' -f 2`
+if [ -f $SB_APP_DIR/$SB_APP_FILE ]; then
+    echo -n "Found $SB_APP_DIR/$SB_APP_FILE, checking fragment type..."
+    type=`unzip -p $SB_APP_DIR/$SB_APP_FILE  META-INF/MANIFEST.MF | grep $type_key | cut -d ':' -f 2`
     if [ $? -eq 0 ]; then
         case $type in 
             ep-java-fragment|ep-eventflow-fragment|ep-application)
@@ -19,9 +19,9 @@ if [ -f $SB_APP_DIR/$SB_APP_FRAGMENT ]; then
                 ;;
         esac
     else
-        echo "$type_key or $manifest file not found in $SB_APP_DIR/$SB_APP_FRAGMENT"
+        echo "$type_key or $manifest file not found in $SB_APP_DIR/$SB_APP_FILE"
         exit 2
     fi
 else
-  echo "No $SB_APP_DIR/$SB_APP_FRAGMENT file found!" && exit 1
+  echo "No $SB_APP_DIR/$SB_APP_FILE file found!" && exit 1
 fi
