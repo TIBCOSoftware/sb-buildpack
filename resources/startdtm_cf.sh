@@ -77,6 +77,13 @@ else
     #Start the node using the assigned administration port
     $ADMINISTRATOR adminport=5556 start node
     exit_code=$?
-    exit $exit_code
+    
+    if $exit_code ; then
+        echo "Application Started."
+        while true;do sleep 1; done
+    else
+        exit $exit_code
+    fi
+
 fi
 
