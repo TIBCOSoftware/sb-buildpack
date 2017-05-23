@@ -48,7 +48,7 @@ download_extract_jdk ()
 
     MAJOR=1
     MINOR=8
-    REV=91
+    REV=131
 
     # snippet from https://gist.github.com/P7h/9741922
     ## Latest JDK8 version released in April 2017: JDK8u131
