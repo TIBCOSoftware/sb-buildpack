@@ -77,24 +77,6 @@ else
     #Start the node using the assigned administration port
     $ADMINISTRATOR adminport=5556 start node
     exit_code=$?
-    if [ $exit_code -eq 0 ]; then
-        echo "Node started successfully."
-        $ADMINISTRATOR adminport=5556 display node
-        trap "echo Container stop requested ; break" TERM INT
-        while true
-        do
-            echo 'To Quit/Stop: CTRL+c.'
-            sleep 300 &
-            trap "echo Container stop requested ; break" TERM INT
-            wait $PID
-            EXIT_STATUS=$?
-        done
-        # Cleanup: Stop DTM and Remove DTM after - need at least 30 seconds before container exits entirely
-        $ADMINISTRATOR adminport=5556 stop node
-        $ADMINISTRATOR remove node installpath=$NODE_INSTALL_PATH/$NODENAME
-    else
-        echo "Failed STARTING node, error code is ${exit_code}. Shutting down container..."
-        exit $exit_code
-    fi
+    exit $exit_code
 fi
 
