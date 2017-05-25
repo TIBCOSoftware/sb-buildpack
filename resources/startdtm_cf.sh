@@ -11,6 +11,7 @@ if [ ! -z "$TIBCO_EP_HOME" ]; then
 fi
 
 ADMINISTRATOR=$TIBCO_EP_HOME/distrib/tibco/bin/epadmin
+epadmin version
 NODE_INSTALL_PATH=$HOME/deploy/nodes
 SB_APP_DIR=$HOME
 export _JAVA_OPTIONS=-DTIBCO_EP_HOME=$TIBCO_EP_HOME
