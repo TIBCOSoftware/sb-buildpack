@@ -1,22 +1,22 @@
 ---
 applications:
-- name: ${SB_APP_NAME}
+- name: ${nodename1}.${SB_APP_NAME}
   memory: 4GB
   disk_quota: 2GB
   timeout: 180
   instances: ${CF_INSTANCES}
   buildpack: ${CF_BUILDPACK_URL}
   domain: ${CF_DOMAIN}
-  random-route: true
+  random-route: false
   host: ${nodename1}
+  health-check-type: port
   env: 
       SB_TARBALL: ${SB_TARBALL}
       SB_TARBALL_URL: ${SB_TARBALL_URL}
       SB_APP_FILE: ${SB_APP_FILE}
       SB_APP_NAME: ${SB_APP_NAME}
-      NODE_CONFIG: ${NODE_CONFIG}.conf
+      NODE_CONFIG: ${NODE_CONFIG}
       NODENAME: ${nodename1}.${ClusterName}
       BUILDTYPE: DEVELOPMENT
-      SUBSTITUTIONS: GOLDYLOCKS_EPPORT=10000
+      SUBSTITUTIONS: ${SUBSTITUTIONS}
       TIBCO_EP_HOME: ${TIBCO_EP_HOME}
-
