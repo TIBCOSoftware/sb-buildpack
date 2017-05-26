@@ -81,7 +81,7 @@ else
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
-        while true;do sleep 1; done
+        while true;do sleep 300; done
     else
         exit $exit_code
     fi
