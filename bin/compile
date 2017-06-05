@@ -75,8 +75,8 @@ fi
 if [ "$?" != "0" ]; then
     exit $?
 fi
-cp $BUILDPACK_DIR/resources/startdtm_cf.sh $BUILD_DIR
-chmod 755 $BUILD_DIR/startdtm_cf.sh
+cp $BUILDPACK_DIR/resources/startsb_cf.sh $BUILD_DIR
+chmod 755 $BUILD_DIR/startsb_cf.sh
 
 cd $HOME
 
