@@ -52,10 +52,15 @@ if [ ! -z "$SB_APP_FILE" ]; then
 fi
 
 if [ ! -z "$SUBSTITUTIONS" ]; then
-    SUBSTITUTIONS=substitutions="$SUBSTITUTIONS"
+    SUBSTITUTIONS=substitutions=$SUBSTITUTIONS
 else
     SUBSTITUTIONS=substitutions=GOLDYLOCKS_EPPORT=10000
 fi
+
+if [ ! -z "$PORT" ]; then
+    SUBSTITUTIONS=$SUBSTITUTIONS,PORT=$PORT
+fi
+
 
 if [ ! -z "$2" ]; then
   APPLIB_PATH=$2
