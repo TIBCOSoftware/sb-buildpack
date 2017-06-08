@@ -85,7 +85,7 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR adminport=5556 start node
+    $ADMINISTRATOR adminport=${ADMIN_PORT} start node
     exit_code=$?
     
     if [ "$exit_code" -eq "0" ]; then
