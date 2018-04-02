@@ -80,7 +80,7 @@ if [ ! -d "$NODE_INSTALL_PATH" ]; then
 fi
 
 # Install node A in cluster X - administration port set to 5556
-$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=DEVELOPMENT
+$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=$BUILDTYPE
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then
