@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # any failure in a pipe is a problem
 set -o pipefail
-## do not tolerate unset variables
-set -o nounset
 # don't try to remember where things are
 set +o hashall
 
