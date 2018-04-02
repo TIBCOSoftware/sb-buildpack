@@ -65,6 +65,9 @@ if [ ! -z "$PORT" ]; then
     SUBSTITUTIONS=$SUBSTITUTIONS,PORT=$PORT
 fi
 
+if [ -z "$BUILDTYPE" ]; then
+    BUILDTYPE=PRODUCTION
+fi
 
 if [ ! -z "$2" ]; then
   APPLIB_PATH=$2
