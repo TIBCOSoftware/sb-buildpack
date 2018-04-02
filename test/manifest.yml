@@ -17,6 +17,6 @@ applications:
       SB_APP_NAME: ${SB_APP_NAME}
       NODE_CONFIG: ${NODE_CONFIG}
       NODENAME: ${nodename1}.${ClusterName}
-      BUILDTYPE: DEVELOPMENT
+      BUILDTYPE: ${buildtype}
       SUBSTITUTIONS: ${SUBSTITUTIONS}
       TIBCO_EP_HOME: ${TIBCO_EP_HOME}
