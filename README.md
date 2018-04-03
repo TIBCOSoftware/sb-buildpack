@@ -1,157 +1,232 @@
-<<<<<<< HEAD
-# Cloud Foundry Java Buildpack
-[![Build Status](https://travis-ci.org/cloudfoundry/java-buildpack.svg?branch=master)](https://travis-ci.org/cloudfoundry/java-buildpack)
-[![Dependency Status](https://gemnasium.com/cloudfoundry/java-buildpack.svg)](https://gemnasium.com/cloudfoundry/java-buildpack)
-[![Code Climate](https://codeclimate.com/repos/5224adaec7f3a3415107004c/badges/bc49f7d7f8dfc47057c8/gpa.svg)](https://codeclimate.com/repos/5224adaec7f3a3415107004c/feed)
-[![Code Climate](https://codeclimate.com/repos/5224adaec7f3a3415107004c/badges/bc49f7d7f8dfc47057c8/coverage.svg)](https://codeclimate.com/repos/5224adaec7f3a3415107004c/feed)
+# Cloud Foundry StreamBase Application Buildpack
 
-The `java-buildpack` is a [Cloud Foundry][] buildpack for running JVM-based applications.  It is designed to run many JVM-based applications ([Grails][], [Groovy][], Java Main, [Play Framework][], [Spring Boot][], and Servlet) with no additional configuration, but supports configuration of the standard components, and extension to add custom components.
+The `sb-buildpack` is a [Cloud Foundry](https://www.cloudfoundry.org/) custom buildpack for running StreamBase 10 applications.  It is designed to run using maven however `cf` command line is also possible.  To start, download the [StreamBase Cloud Examples](http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloud-10.2.1-src.tar.gz) and use the cloud-10.2.1/cloudfoundry/pom.xml to compile and deploy your buildpack.
 
-## Usage
-To use this buildpack specify the URI of the repository when pushing an application to Cloud Foundry:
+Please read the Usage and Requirements sections below prior to deploying the buildpack.  For a complete description of the buildpack, goto the [Cloud Foundry Example with StreamBase 10](http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloudfoundry/index.html) site.
+
+## Prerequisites
+* Install [Cloud Foundry CLI](https://docs.pivotal.io/pivotalcf/devguide/installcf/install-go-cli.html) on your local computer
+* Access to Pivotal Cloud Foundry Platform or [Pivotal Web Services](https:/pivotal.io), IBM Cloud, etc.
+* If using hosted PCF like PWS, a [Github](https://github.com) account is required to stage buildpack.
+* Using Maven: Java 1.8.0+, Maven 3.3.3+, Curl
+* StreamBase Studio Installation on your local computer
+* StreamBase Liveview Web Fragment example included in the [StreamBase Cloud Examples](http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloud-10.2.1-src.tar.gz) or your custom SB Web Application
+
+### Create CF ORG, DOMAIN, ROUTES
+
+Use the following CF command lines to create your org, domain, and route for the StreamBase Application prior to deployment.
 
 ```bash
-cf push <APP-NAME> -p <ARTIFACT> -b https://github.com/cloudfoundry/java-buildpack.git
+cf login -u <username> -p <password> -o <org> -s <space> -a https://api.run.pivotal.io
+cf create-route -s <space> lvweb.cfapps.io 
+```
+
+## Usage
+
+Use the cf commands below for manual deployment of StreamBase Application:
+
+```bash
+cf login -u <username> -p <password> -o <org> -s <space> -a https://api.run.pivotal.io
+mkdir app && cp <yoursbapp.zip> app/<yoursbapp.zip>
+cd app
+cf push myapp -f <path to manifest.yml>
+```
+
+To use this buildpack along with Maven, download the StreamBase Cloud Examples on your local computer with StreamBase Studio client installed. Then compile and deploy the sample StreamBase Liveview Helloworld application to Cloud Foundry.
+
+Use the commands below for faster deployment to PWS or your own private CF API endpoint:
+
+```bash
+curl http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloud-10.2.1-src.tar.gz | tar xz
+cd cloud-10.2.1/cloudfoundry/hellolvweb-app && mvn install
+cf login -u <username> -p <password> -o <org> -s <space> -a https://api.run.pivotal.io
+cd ../ && mvn integration-test  -DskipTests=true -DCF_TARGET=https://api.run.pivotal.io -DCF_DOMAIN=<yourapp>.cfapps.io  -DCF_SPACE=<space> -DCF_ORG=<org>  -DSB_TARBALL_URL=https://<location to sb runtime platform_linuxx86_64.zip>
 ```
 
 ## Examples
-The following are _very_ simple examples for deploying the artifact types that we support.
+The following are simple examples for deploying StreamBase Application with this buildpack.
 
-* [Embedded web server](docs/example-embedded-web-server.md)
-* [Grails](docs/example-grails.md)
-* [Groovy](docs/example-groovy.md)
-* [Java Main](docs/example-java_main.md)
-* [Play Framework](docs/example-play_framework.md)
-* [Servlet](docs/example-servlet.md)
-* [Spring Boot CLI](docs/example-spring_boot_cli.md)
+### Using Manifest file
 
-## Configuration and Extension
-The buildpack supports extension through the use of Git repository forking. The easiest way to accomplish this is to use [GitHub's forking functionality][] to create a copy of this repository.  Make the required extension changes in the copy of the repository. Then specify the URL of the new repository when pushing Cloud Foundry applications. If the modifications are generally applicable to the Cloud Foundry community, please submit a [pull request][] with the changes.
+Use the manifest file and node configuration examples below to perform your 'cf push'. By default, the startup script will deploy the StreamBase Application with the HOCON node.conf included in your app or in the ./app directory.
 
-Buildpack configuration can be overridden with an environment variable matching the configuration file you wish to override minus the `.yml` extension and with a prefix of `JBP_CONFIG`. It is not possible to add new configuration properties and properties with `nil` or empty values will be ignored by the buildpack. The value of the variable should be valid inline yaml. For example, to change the default version of Java to 7 and adjust the memory heuristics apply this environment variable to the application.
+manifest.yml example:
 
-```cf set-env my-application JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}, memory_calculator: {memory_heuristics: {heap: 85, stack: 10}}]'```
+```yaml
+applications:
+- name: A1.hellolvweb-app
+  memory: 8GB
+  disk_quota: 2GB
+  timeout: 180
+  instances: 1
+  buildpack: https://github.com/TIBCOSoftware/sb-buildpack.git
+  domain: lvweb.cfapps.io
+  random-route: false
+  host: A1
+  health-check-type: port
+  env: 
+      SB_TARBALL: platform_linuxx86_64.zip
+      SB_TARBALL_URL: https://sbruntime.s3.amazonaws.com
+      SB_APP_FILE: hellolvweb-app-10.3.0-SNAPSHOT.zip
+      SB_APP_NAME: hellolvweb-app
+      ADMIN_PORT: 5556
+      NODE_CONFIG: node.conf
+      NODENAME: A1.hellolvweb-app
+      BUILDTYPE: PRODUCTION
+      SUBSTITUTIONS: GOLDYLOCKS_EPPORT=10000
+      TIBCO_EP_HOME: /home/vcap/app
+```
 
-If the key or value contains a special character such as `:` it should be escaped with double quotes. For example, to change the default repository path for the buildpack.
+node.conf example:
 
-```cf set-env my-application JBP_CONFIG_REPOSITORY '[ default_repository_root: "http://repo.example.io" ]'```
+```hocon
+name = "MyApplication"
+version = "1.0.0"
+type = "com.tibco.ep.dtm.configuration.node"
 
-Environment variable can also be specified in the applications `manifest` file. See the [Environment Variables][] documentation for more information.
+configuration =
+{
+    NodeDeploy =
+    {
+        nodes =
+        {
+            "A1.hellolvweb-app" =
+            {
+                nodeType = "default"
+                configuration =
+                [
+                """
+                name = "helloworld"
+                version = "1.0.0"
+                type = "com.tibco.ep.streambase.configuration.sbclientapilistener"
+                configuration =
+                {
+                    ClientAPIListener =
+                    {
+                        associatedWithEngines = [ "default-engine-for-com.tibco.ep.dtmexamples.liveviewfragment.hellolvweb" ]
+                        apiListenerAddress =
+                        {
+                            portNumber = ${GOLDYLOCKS_EPPORT:-10000}
+                        }
+                    }
+                }
+                """,
+                """
+                name = "hellolvweb"
+                version = "1.0.0"
+                type = "com.tibco.ep.ldm.configuration.ldmclientapilistener"
+                configuration =
+                {
+                    ClientAPIListener =
+                    {
+                        associatedWithEngines = [ "default-engine-for-com.tibco.ep.dtmexamples.liveviewfragment.hellolvweb" ]
+                        portNumber = ${PORT:-0}
+                        authenticationRealmName = "local-authentication-realm"
+                    }
+                }
+                """,
 
-To learn how to configure various properties of the buildpack, follow the "Configuration" links below. More information on extending the buildpack is available [here](docs/extending.md).
+                ]
+            }
+        }
+    }
+}
+```
+1. Login to your CF environment if necessary.
+2. Create app directory on your local computer
+3. Copy the StreamBase Linux runtime zip file to the local app directory.
+4. Copy your StreamBase Application to the app directory and node.conf if applicable.  Optionally you can create an uploadable remote URL like on S3 for StreamBase runtime to save time and bandwidth.
+5. Create the manifest.yml file for the app using the example above.  Don't include env var SB\_TARBALL_URL if you copied the StreamBase runtime in the ./app directory.
+6. Goto into your app directly and push it to your Cloud Foundry environment
+
+```bash
+cf login -u <username> -p <password> -o <org> -s <space> -a https://api.run.pivotal.io
+mkdir app && cp $HOME/workspace/hellolvweb-app-10.2.1.zip app/hellolvweb-app-10.2.1.zip
+cp /opt/tibco/sb-cep/10.2/sdk/maven/repo/com/tibco/ep/sb/rt/platform_linuxx86_64/10.2.1/platform_linuxx86_64-10.2.1.zip ./app/platform_linuxx86_64.zip
+cd app
+cf push A1.hellolvweb-app -f <path to manifest.yml>
+```
+
+### Using Maven
+
+1. Login to your CF environment if necessary.
+2. Download the [StreamBase Cloud Examples](http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloud-10.2.1-src.tar.gz) onto your computer where StreamBase Studio is installed.
+3. Import or copy the cloud-10.2.1/cloudfoundry directory into your StreamBase workspace folder.
+4. Change the dependency section in the pom.xml to utilize your own StreamBase Application. Perform a 'mvn install' on the StreamBase Application.
+5. Optionally you can create an uploadable remote URL like on S3 for StreamBase runtime to save time and bandwidth.
+6. Invoke maven lifecycle integration-test to deploy your application to CF.
+
+```bash
+cf login -u <username> -p <password> -o <org> -s <space> -a https://api.run.pivotal.io
+curl http://devzone.tibco.com/sites/streambase/latest/dtmexamples/cloud/cloud-10.2.1-src.tar.gz | tar xz
+cd cloud-10.2.1/cloudfoundry/hellolvweb-app && mvn install
+cd ../ && mvn integration-test  -DskipTests=true -DCF_TARGET=https://api.run.pivotal.io -DCF_DOMAIN=lvweb.cfapps.io  -DCF_SPACE=<space> -DCF_ORG=<org>  -DSB_TARBALL_URL=https://sbruntime.s3.amazonaws.com
+```
+### Confirm Application is Running
+
+* Check the App Status
+
+```bash
+# cf apps
+Getting apps in org sb-ldm / space development as user@example.com...
+OK
+
+name                requested state   instances   memory   disk   urls
+A1.hellolvweb-app   started           1/1         8G       2G     A1.lvweb.cfapps.io
+```
+
+* Check the logs
+
+```bash
+cf logs --recent A1.hellolvweb-app
+   2018-04-02T16:25:45.23-0400 [APP/PROC/WEB/0] ERR ++ mkdir -p /home/vcap/app/deploy/nodes
+   2018-04-02T16:25:45.23-0400 [APP/PROC/WEB/0] ERR ++ /home/vcap/app/distrib/tibco/bin/epadmin install node nodedirectory=/home/vcap/app/deploy/nodes adminport=5556 nodename=A1.hellolvweb-app application=/home/vcap/app/hellolvweb-app-10.3.0-SNAPSHOT.zip nodedeploy=/home/vcap/app/node.conf substitutions=GOLDYLOCKS_EPPORT=10000,PORT=8080 deploydirectories=/lib:/home/vcap/app:/home/vcap/app/java-bin buildtype=PRODUCTION
+   2018-04-02T16:25:45.24-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]         Installing node
+   2018-04-02T16:25:47.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 PRODUCTION executables
+   2018-04-02T16:25:47.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 File shared memory
+   2018-04-02T16:25:47.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 4 concurrent allocation segments
+   2018-04-02T16:25:47.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Host name db90cfcd-5c29-4ec2-408a-e1c1
+   2018-04-02T16:25:47.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Container tibco/sb
+   2018-04-02T16:25:47.37-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Starting container services
+   2018-04-02T16:25:51.48-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Loading node configuration
+   2018-04-02T16:25:52.67-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Auditing node security
+   2018-04-02T16:25:53.07-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Deploying application
+   2018-04-02T16:25:53.79-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                         Engine default-engine-for-com.tibco.ep.dtmexamples.liveviewfragment.hellolvweb
+   2018-04-02T16:25:54.12-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Application deployed
+   2018-04-02T16:25:54.12-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Administration port is 5556
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Discovery Service running on port 54321
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Service name is A1.hellolvweb-app
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]         Node installed
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] ERR ++ exit_code=0
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] ERR ++ '[' 0 -ne 0 ']'
+   2018-04-02T16:25:54.13-0400 [APP/PROC/WEB/0] ERR ++ /home/vcap/app/distrib/tibco/bin/epadmin adminport=5556 start node
+   2018-04-02T16:25:54.14-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]         Starting node
+   2018-04-02T16:25:58.77-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Engine application::default-engine-for-com.tibco.ep.dtmexamples.liveviewfragment.hellolvweb started
+   2018-04-02T16:25:58.79-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Loading node configuration
+   2018-04-02T16:26:00.69-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Auditing node security
+   2018-04-02T16:26:01.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Host name localhost
+   2018-04-02T16:26:01.09-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Administration port is 5556
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Discovery Service running on port 54321
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]                 Service name is A1.hellolvweb-app
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] OUT [A1.hellolvweb-app]         Node started
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] ERR ++ exit_code=0
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] ERR ++ '[' 0 -eq 0 ']'
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] ERR ++ echo 'Application Started.'
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] ERR ++ true
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] ERR ++ sleep 300
+   2018-04-02T16:26:01.10-0400 [APP/PROC/WEB/0] OUT Application Started.
+   2018-04-02T16:26:35.39-0400 [CELL/0] OUT Container became healthy
+   2018-04-02T16:31:01.10-0400 [APP/PROC/WEB/0] ERR ++ true
+   2018-04-02T16:31:01.10-0400 [APP/PROC/WEB/0] ERR ++ sleep 300
+```
+
+* Point your web browser to the route or app end target
+
+<img src="lvwebexample.png" alt="Liveview Web Example" height="800" width="509"/>
+
 
 ## Additional Documentation
-* [Design](docs/design.md)
-* [Security](docs/security.md)
-* Standard Containers
-	* [Dist ZIP](docs/container-dist_zip.md)
-	* [Groovy](docs/container-groovy.md) ([Configuration](docs/container-groovy.md#configuration))
-	* [Java Main](docs/container-java_main.md) ([Configuration](docs/container-java_main.md#configuration))
-	* [Play Framework](docs/container-play_framework.md)
-	* [Ratpack](docs/container-ratpack.md)
-	* [Spring Boot](docs/container-spring_boot.md)
-	* [Spring Boot CLI](docs/container-spring_boot_cli.md) ([Configuration](docs/container-spring_boot_cli.md#configuration))
-	* [Tomcat](docs/container-tomcat.md) ([Configuration](docs/container-tomcat.md#configuration))
-* Standard Frameworks
-	* [AppDynamics Agent](docs/framework-app_dynamics_agent.md) ([Configuration](docs/framework-app_dynamics_agent.md#configuration))
-	* [Introscope Agent](docs/framework-introscope_agent.md) ([Configuration](docs/framework-introscope_agent.md#configuration))
-	* [DynaTrace Agent](docs/framework-dyna_trace_agent.md) ([Configuration](docs/framework-dyna_trace_agent.md#configuration))
-	* [Java Options](docs/framework-java_opts.md) ([Configuration](docs/framework-java_opts.md#configuration))
-	* [JRebel Agent](docs/framework-jrebel_agent.md) ([Configuration](docs/framework-jrebel_agent.md#configuration))
-	* [Luna Security Provider](docs/framework-luna_security_provider.md) ([Configuration](docs/framework-luna_security_provider.md#configuration))
-	* [MariaDB JDBC](docs/framework-maria_db_jdbc.md) ([Configuration](docs/framework-maria_db_jdbc.md#configuration))
-	* [New Relic Agent](docs/framework-new_relic_agent.md) ([Configuration](docs/framework-new_relic_agent.md#configuration))
-	* [Play Framework Auto Reconfiguration](docs/framework-play_framework_auto_reconfiguration.md) ([Configuration](docs/framework-play_framework_auto_reconfiguration.md#configuration))
-	* [Play Framework JPA Plugin](docs/framework-play_framework_jpa_plugin.md) ([Configuration](docs/framework-play_framework_jpa_plugin.md#configuration))
-	* [PostgreSQL JDBC](docs/framework-postgresql_jdbc.md) ([Configuration](docs/framework-postgresql_jdbc.md#configuration))
-	* [Spring Auto Reconfiguration](docs/framework-spring_auto_reconfiguration.md) ([Configuration](docs/framework-spring_auto_reconfiguration.md#configuration))
-	* [Spring Insight](docs/framework-spring_insight.md)
-* Standard JREs
-	* [OpenJDK](docs/jre-open_jdk_jre.md) ([Configuration](docs/jre-open_jdk_jre.md#configuration))
-	* [Oracle](docs/jre-oracle_jre.md) ([Configuration](docs/jre-oracle_jre.md#configuration))
-* [Extending](docs/extending.md)
-	* [Application](docs/extending-application.md)
-	* [Droplet](docs/extending-droplet.md)
-	* [BaseComponent](docs/extending-base_component.md)
-	* [VersionedDependencyComponent](docs/extending-versioned_dependency_component.md)
-	* [ModularComponent](docs/extending-modular_component.md)
-	* [Caches](docs/extending-caches.md) ([Configuration](docs/extending-caches.md#configuration))
-	* [Logging](docs/extending-logging.md) ([Configuration](docs/extending-logging.md#configuration))
-	* [Repositories](docs/extending-repositories.md) ([Configuration](docs/extending-repositories.md#configuration))
-	* [Utilities](docs/extending-utilities.md)
-* [Debugging the Buildpack](docs/debugging-the-buildpack.md)
-* [Buildpack Modes](docs/buildpack-modes.md)
-* Related Projects
-	* [Java Buildpack Dependency Builder](https://github.com/cloudfoundry/java-buildpack-dependency-builder)
-	* [Java Test Applications](https://github.com/cloudfoundry/java-test-applications)
-	* [Java Buildpack System Tests](https://github.com/cloudfoundry/java-buildpack-system-test)
-
-## Building Packages
-The buildpack can be packaged up so that it can be uploaded to Cloud Foundry using the `cf create-buildpack` and `cf update-buildpack` commands.  In order to create these packages, the rake `package` task is used.
-
-### Online Package
-The online package is a version of the buildpack that is as minimal as possible and is configured to connect to the network for all dependencies.  This package is about 50K in size.  To create the online package, run:
-
-```bash
-bundle install
-bundle exec rake package
-...
-Creating build/java-buildpack-cfd6b17.zip
-```
-
-### Offline Package
-The offline package is a version of the buildpack designed to run without access to a network.  It packages the latest version of each dependency (as configured in the [`config/` directory][]) and [disables `remote_downloads`][]. This package is about 180M in size.  To create the offline package, use the `OFFLINE=true` argument:
-
-To pin the version of dependencies used by the buildpack to the ones currently resolvable use the `PINNED=true` argument. This will update the [`config/` directory][] to contain exact version of each dependency instead of version ranges.
-
-```bash
-bundle install
-bundle exec rake package OFFLINE=true PINNED=true
-...
-Creating build/java-buildpack-offline-cfd6b17.zip
-```
-
-### Package Versioning
-Keeping track of different versions of the buildpack can be difficult.  To help with this, the rake `package` task puts a version discriminator in the name of the created package file.  The default value for this discriminator is the current Git hash (e.g. `cfd6b17`).  To change the version when creating a package, use the `VERSION=<VERSION>` argument:
-
-```bash
-bundle install
-bundle exec rake package VERSION=2.1
-...
-Creating build/java-buildpack-2.1.zip
-```
-
-## Running Tests
-To run the tests, do the following:
-
-```bash
-bundle install
-bundle exec rake
-```
-
-[Running Cloud Foundry locally][] is useful for privately testing new features.
-
-## Contributing
-[Pull requests][] are welcome; see the [contributor guidelines][] for details.
+* [CF Deploy Doc](https://docs.cloudfoundry.org/devguide/deploy-apps/deploy-app.html)
 
 ## License
-This buildpack is released under version 2.0 of the [Apache License][].
-
-[`config/` directory]: config
-[Apache License]: http://www.apache.org/licenses/LICENSE-2.0
-[Cloud Foundry]: http://www.cloudfoundry.com
-[contributor guidelines]: CONTRIBUTING.md
-[disables `remote_downloads`]: docs/extending-caches.md#configuration
-[Environment Variables]: http://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html#env-block
-[GitHub's forking functionality]: https://help.github.com/articles/fork-a-repo
-[Grails]: http://grails.org
-[Groovy]: http://groovy.codehaus.org
-[Play Framework]: http://www.playframework.com
-[pull request]: https://help.github.com/articles/using-pull-requests
-[Pull requests]: http://help.github.com/send-pull-requests
-[Running Cloud Foundry locally]: http://docs.cloudfoundry.org/deploying/run-local.html
-[Spring Boot]: http://projects.spring.io/spring-boot/
-# sb-buildpack
-=======
-# sb-buildpack
->>>>>>> f299be4f05041445bcede38317baf396a626f0fb
+This buildpack is released under [3-clause BSD](License.md) license.
