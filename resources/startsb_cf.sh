@@ -43,12 +43,7 @@ fi
 if [ ! -z "$NODENAME" ]; then
     NODE_NAME="nodename=$NODENAME${CF_INSTANCE_INDEX}.${ClusterName}"
 else
-  if [ -z "$DOMAIN_NAME" ]; then
-    NODENAME=$HOSTNAME.$ClusterName
-  else
-    NODENAME=$HOSTNAME
-  fi
-    NODE_NAME="nodename=$NODENAME"
+    NODE_NAME="nodename=${CF_INSTANCE_INDEX}.${ClusterName}"
 fi
 
 if [ ! -z "$SB_APP_FILE" ]; then
