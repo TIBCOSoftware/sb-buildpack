@@ -222,7 +222,7 @@ cf logs --recent A1.hellolvweb-app
 
 * Point your web browser to the route or app end target
 
-<img src="lvwebexample.png" alt="Liveview Web Example" height="800" width="509"/>
+<img src="lvwebexample.png" alt="Liveview Web Example" height="509" width="800"/>
 
 
 ## Additional Documentation
