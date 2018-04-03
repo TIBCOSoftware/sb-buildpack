@@ -41,7 +41,7 @@ fi
 
 # check if nodename is present
 if [ ! -z "$NODENAME" ]; then
-    NODE_NAME="nodename=$NODENAME${CF_INSTANCE_INDEX}"
+    NODE_NAME="nodename=$NODENAME${CF_INSTANCE_INDEX}.${ClusterName}"
 else
   if [ -z "$DOMAIN_NAME" ]; then
     NODENAME=$HOSTNAME.$ClusterName
