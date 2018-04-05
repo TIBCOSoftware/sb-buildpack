@@ -85,6 +85,10 @@ else
     #Start the node using the assigned administration port
     $ADMINISTRATOR adminport=${ADMIN_PORT} start node
     exit_code=$?
+
+    $ADMINISTRATOR adminport=${ADMIN_PORT} display cluster
+    $ADMINISTRATOR adminport=${ADMIN_PORT} display partition
+    $ADMINISTRATOR adminport=${ADMIN_PORT} display engine
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
