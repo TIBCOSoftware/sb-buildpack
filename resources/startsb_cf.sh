@@ -86,6 +86,10 @@ else
     $ADMINISTRATOR adminport=${ADMIN_PORT} start node
     exit_code=$?
 
+    $ADMINISTRATOR servicename=0.topologies.apps.internal adminport=${ADMIN_PORT} display node
+    $ADMINISTRATOR hostname=0.topologies.apps.internal adminport=${ADMIN_PORT} display node
+    $ADMINISTRATOR hostname=1.topologies.apps.internal adminport=${ADMIN_PORT} display node
+
     $ADMINISTRATOR adminport=${ADMIN_PORT} display cluster
     $ADMINISTRATOR adminport=${ADMIN_PORT} display partition
     $ADMINISTRATOR adminport=${ADMIN_PORT} display engine
