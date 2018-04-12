@@ -43,6 +43,7 @@ fi
 if [ ! -z "$NODENAME" ]; then
     NODE_NAME="nodename=$NODENAME${CF_INSTANCE_INDEX}.${ClusterName}"
 else
+    NODENAME=${CF_INSTANCE_INDEX}.${ClusterName}
     NODE_NAME="nodename=${CF_INSTANCE_INDEX}.${ClusterName}"
 fi
 
@@ -83,16 +84,16 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR adminport=${ADMIN_PORT} start node
+    $ADMINISTRATOR servicename=$NODENAME start node
     exit_code=$?
 
-    $ADMINISTRATOR adminport=${ADMIN_PORT} display node
-    $ADMINISTRATOR hostname=0.topologies.apps.internal adminport=${ADMIN_PORT} username=guest password=cloudfoundry display node
-    $ADMINISTRATOR hostname=1.topologies.apps.internal adminport=${ADMIN_PORT} username=guest password=cloudfoundry display node
+    $ADMINISTRATOR servicename=$NODENAME display node
+    $ADMINISTRATOR servicename=0.topologies.apps.internal username=guest password=cloudfoundry display node
+    $ADMINISTRATOR servicename=1.topologies.apps.internal username=guest password=cloudfoundry display node
 
-    $ADMINISTRATOR adminport=${ADMIN_PORT} display cluster
-    $ADMINISTRATOR adminport=${ADMIN_PORT} display partition
-    $ADMINISTRATOR adminport=${ADMIN_PORT} display engine
+    $ADMINISTRATOR servicename=$NODENAME display cluster
+    $ADMINISTRATOR servicename=$NODENAME display partition
+    $ADMINISTRATOR servicename=$NODENAME display engine
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
