@@ -100,6 +100,8 @@ else
         while true;do sleep 300; done
     else
         cat /home/vcap/app/deploy/nodes/$NODENAME/logs/*.log > /home/vcap/all.log
+        echo "Application failed to start. Retrieve logs at /home/vcap/all.log...you have 2 minutes to do this."
+        sleep 120
         exit $exit_code
     fi
 
