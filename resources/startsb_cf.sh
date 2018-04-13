@@ -99,6 +99,7 @@ else
         echo "Application Started."
         while true;do sleep 300; done
     else
+        cat /home/vcap/app/deploy/nodes/$NODENAME/logs/*.log > /home/vcap/all.log
         exit $exit_code
     fi
 
