@@ -41,16 +41,15 @@ download_extract_sb ()
     fi
 }
 
-download_extract_jdk ()
+download_extract_oraclejdk ()
 {
 
     MAJOR=1
     MINOR=8
-    REV=131
+    REV=172
 
     # snippet from https://gist.github.com/P7h/9741922
-    ## Latest JDK8 version released in April 2017: JDK8u131
-    BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131
+    BASE_URL_8=http://download.oracle.com/otn-pub/java/jdk/8u${REV}-b11/a58eab1ec242421181065cdc37240b08/jdk-${MINOR}u${REV}
 
     ## JDK_VERSION=${BASE_URL_8: -8}
     JDK_VERSION=`echo $BASE_URL_8 | rev | cut -d "/" -f1 | rev`
@@ -62,7 +61,27 @@ download_extract_jdk ()
 
 }
 
-download_extract_jdk
+download_extract_openjdk ()
+{   
+
+    MAJOR=1
+    MINOR=8
+    REV=172
+
+    # snippet from https://gist.github.com/P7h/9741922
+    BASE_URL_8=https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-${MAJOR}.${MINOR}.0_${REV}.tar.gz
+
+    ## JDK_VERSION=${BASE_URL_8: -8}
+    JDK_VERSION=`echo $BASE_URL_8 | rev | cut -d "/" -f1 | rev`
+    PLATFORM=-linux-x64.tar.gz
+
+    wget -c -O "$CACHE_DIR/$JDK_VERSION$PLATFORM" --secure-protocol=TLSv1 --no-check-certificate --no-cookies "${BASE_URL_8}"
+
+    tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $BUILD_DIR
+
+}
+
+download_extract_openjdk
 if [ ! -z "$SB_TARBALL_URL" ]; then
     download_extract_sb
 else
