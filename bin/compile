@@ -74,12 +74,11 @@ download_extract_openjdk ()
 
     ## JDK_VERSION=${BASE_URL_8: -8}
     JDK_VERSION=`echo $BASE_URL_8 | rev | cut -d "/" -f1 | rev`
-    PLATFORM=-linux-x64.tar.gz
 
-    wget -c -O "$CACHE_DIR/$JDK_VERSION$PLATFORM" --secure-protocol=TLSv1 --no-check-certificate --no-cookies "${BASE_URL_8}"
+    wget -c -O "$CACHE_DIR/$JDK_VERSION" --secure-protocol=TLSv1 --no-check-certificate --no-cookies "${BASE_URL_8}"
 
     mkdir -p $JAVA_HOME
-    tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $JAVA_HOME
+    tar -xzf $CACHE_DIR/$JDK_VERSION -C $JAVA_HOME
 
 }
 
