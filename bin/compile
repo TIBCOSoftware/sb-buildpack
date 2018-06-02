@@ -67,6 +67,7 @@ download_extract_openjdk ()
     MAJOR=1
     MINOR=8
     REV=172
+    JAVA_HOME=$BUILD_DIR/jdk${MAJOR}.${MINOR}.0_${REV}
 
     # snippet from https://gist.github.com/P7h/9741922
     BASE_URL_8=https://java-buildpack.cloudfoundry.org/openjdk/trusty/x86_64/openjdk-${MAJOR}.${MINOR}.0_${REV}.tar.gz
@@ -77,7 +78,8 @@ download_extract_openjdk ()
 
     wget -c -O "$CACHE_DIR/$JDK_VERSION$PLATFORM" --secure-protocol=TLSv1 --no-check-certificate --no-cookies "${BASE_URL_8}"
 
-    tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $BUILD_DIR
+    mkdir -p $JAVA_HOME
+    tar -xzf $CACHE_DIR/$JDK_VERSION$PLATFORM -C $JAVA_HOME
 
 }
 

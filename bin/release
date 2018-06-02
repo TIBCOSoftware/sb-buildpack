@@ -4,5 +4,5 @@
 cat <<EOF
 ---
 default_process_types:
-    web: export JAVA_HOME=/home/vcap/app/jdk1.8.0_131; export TIBCO_EP_HOME=/home/vcap/app; exec ./startsb_cf.sh ${ClusterName}
+    web: export JAVA_HOME=/home/vcap/app/jdk1.8.0_172; export TIBCO_EP_HOME=/home/vcap/app; exec ./startsb_cf.sh ${ClusterName}
 EOF
