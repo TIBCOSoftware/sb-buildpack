@@ -1,9 +1,6 @@
 set -x
 echo "List Diego Cell CF env vars"
-echo "CF_INSTANCE_IP=$CF_INSTANCE_IP"
-echo "CF_INSTANCE_INTERNAL_IP=$CF_INSTANCE_INTERNAL_IP"
-echo "CF_INSTANCE_PORT=$CF_INSTANCE_PORT"
-echo "CF_INSTANCE_PORTS=$CF_INSTANCE_PORTS"
+set | grep "CF_INSTANCE"
 
 # check if TIBCO_EP_HOME is present
 if [ ! -z "$TIBCO_EP_HOME" ]; then
@@ -41,7 +38,11 @@ fi
 
 # check if nodename is present
 if [ ! -z "$NODENAME" ]; then
+  if [ "$POLYGLOT" = "true" ]; then
+    NODE_NAME="nodename=$CF_INSTANCE_INDEX.$NODENAME"    
+  else
     NODE_NAME="nodename=$NODENAME"
+  fi
 else
   if [ -z "$DOMAIN_NAME" ]; then
     NODENAME=$HOSTNAME.$ClusterName
