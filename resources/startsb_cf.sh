@@ -48,6 +48,7 @@ if [ ! -z "$NODENAME" ]; then
         DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
         sleep 30
     done
+    POLYGLOT_HOSTNAME="hostname=$CF_INSTANCE_INDEX.$NODENAME"
   else
     NODE_NAME="nodename=$NODENAME"
   fi
@@ -97,7 +98,7 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR adminport=${ADMIN_PORT} start node
+    $ADMINISTRATOR $POLYGLOT_HOSTNAME adminport=${ADMIN_PORT} start node
     exit_code=$?
     
     if [ "$exit_code" -eq "0" ]; then
