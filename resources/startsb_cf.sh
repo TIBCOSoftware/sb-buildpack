@@ -39,7 +39,15 @@ fi
 # check if nodename is present
 if [ ! -z "$NODENAME" ]; then
   if [ "$POLYGLOT" = "true" ]; then
-    NODE_NAME="nodename=$CF_INSTANCE_INDEX.$NODENAME"    
+    NODE_NAME="nodename=$CF_INSTANCE_INDEX.$NODENAME"
+    echo "wait until dns updates with node index name"
+    sleep 15
+    DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
+    while [ "$DNS_RESULT" = "" ]
+    do
+        DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
+        sleep 30
+    done
   else
     NODE_NAME="nodename=$NODENAME"
   fi
