@@ -1,6 +1,6 @@
 set -x
 echo "List Diego Cell CF env vars"
-set | grep "CF_INSTANCE"
+set | grep CF_
 
 # check if TIBCO_EP_HOME is present
 if [ ! -z "$TIBCO_EP_HOME" ]; then
@@ -43,12 +43,12 @@ if [ ! -z "$NODENAME" ]; then
     echo "wait until dns updates with node index name"
     sleep 15
     DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
-    while [ "$DNS_RESULT" = "" ]
+    while [ "$DNS_RESULT" = "" ]  
     do
         DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
         sleep 30
     done
-    POLYGLOT_HOSTNAME="hostname=$CF_INSTANCE_INDEX.$NODENAME"
+    NODENAME="$CF_INSTANCE_INDEX.$NODENAME"
   else
     NODE_NAME="nodename=$NODENAME"
   fi
@@ -58,7 +58,7 @@ else
   else
     NODENAME=$HOSTNAME
   fi
-    NODE_NAME="nodename=$NODENAME"
+  NODE_NAME="nodename=$NODENAME"
 fi
 
 if [ ! -z "$SB_APP_FILE" ]; then
@@ -90,7 +90,7 @@ if [ ! -d "$NODE_INSTALL_PATH" ]; then
 fi
 
 # Install node A in cluster X - administration port set to 5556
-$ADMINISTRATOR install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=$BUILDTYPE
+$ADMINISTRATOR username=vcap password=cloudfoundry install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=$BUILDTYPE
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then
@@ -98,13 +98,22 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR $POLYGLOT_HOSTNAME adminport=${ADMIN_PORT} start node
+    $ADMINISTRATOR hostname=$HOSTNAME adminport=5556 start node
     exit_code=$?
+
+    $ADMINISTRATOR servicename=$NODENAME display node
+
+    $ADMINISTRATOR servicename=$NODENAME display cluster
+    $ADMINISTRATOR servicename=$NODENAME display partition
+    $ADMINISTRATOR servicename=$NODENAME display engine
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
         while true;do sleep 300; done
     else
+        cat $NODE_INSTALL_PATH/$NODENAME/logs/*.log > $HOME/all.log
+        echo "Application failed to start. Retrieve logs at $HOME/all.log...you have 2 minutes to do this."
+        sleep 120
         exit $exit_code
     fi
 
