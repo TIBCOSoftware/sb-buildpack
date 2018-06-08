@@ -48,7 +48,7 @@ if [ ! -z "$NODENAME" ]; then
         DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
         sleep 30
     done
-    POLYGLOT_HOSTNAME="hostname=$CF_INSTANCE_INDEX.$NODENAME"
+    POLYGLOT_HOSTNAME="$CF_INSTANCE_INDEX.$NODENAME"
   else
     NODE_NAME="nodename=$NODENAME"
   fi
@@ -98,16 +98,16 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR servicename=$NODENAME start node
+    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME start node
     exit_code=$?
 
-    $ADMINISTRATOR servicename=$NODENAME display node
-    $ADMINISTRATOR servicename=0.topologies.apps.internal username=guest password=cloudfoundry display node
-    $ADMINISTRATOR servicename=1.topologies.apps.internal username=guest password=cloudfoundry display node
+    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display node
+    $ADMINISTRATOR servicename=0.topologies.apps.internal username=vcap password=cloudfoundry display node
+    $ADMINISTRATOR servicename=1.topologies.apps.internal username=vcap password=cloudfoundry display node
 
-    $ADMINISTRATOR servicename=$NODENAME display cluster
-    $ADMINISTRATOR servicename=$NODENAME display partition
-    $ADMINISTRATOR servicename=$NODENAME display engine
+    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display cluster
+    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display partition
+    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display engine
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
