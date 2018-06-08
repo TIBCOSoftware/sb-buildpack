@@ -38,10 +38,27 @@ fi
 
 # check if nodename is present
 if [ ! -z "$NODENAME" ]; then
-    NODE_NAME="nodename=$NODENAME${CF_INSTANCE_INDEX}.${ClusterName}"
+  if [ "$POLYGLOT" = "true" ]; then
+    NODE_NAME="nodename=$CF_INSTANCE_INDEX.$NODENAME"
+    echo "wait until dns updates with node index name"
+    sleep 15
+    DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
+    while [ "$DNS_RESULT" = "" ]  
+    do
+        DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
+        sleep 30
+    done
+    POLYGLOT_HOSTNAME="hostname=$CF_INSTANCE_INDEX.$NODENAME"
+  else
+    NODE_NAME="nodename=$NODENAME"
+  fi
 else
-    NODENAME=${CF_INSTANCE_INDEX}.${ClusterName}
-    NODE_NAME="nodename=${CF_INSTANCE_INDEX}.${ClusterName}"
+  if [ -z "$DOMAIN_NAME" ]; then
+    NODENAME=$HOSTNAME.$ClusterName
+  else
+    NODENAME=$HOSTNAME
+  fi
+  NODE_NAME="nodename=$NODENAME"
 fi
 
 if [ ! -z "$SB_APP_FILE" ]; then
