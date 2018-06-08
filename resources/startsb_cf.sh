@@ -1,9 +1,6 @@
 set -x
 echo "List Diego Cell CF env vars"
-echo "CF_INSTANCE_IP=$CF_INSTANCE_IP"
-echo "CF_INSTANCE_INTERNAL_IP=$CF_INSTANCE_INTERNAL_IP"
-echo "CF_INSTANCE_PORT=$CF_INSTANCE_PORT"
-echo "CF_INSTANCE_PORTS=$CF_INSTANCE_PORTS"
+set | grep CF_
 
 # check if TIBCO_EP_HOME is present
 if [ ! -z "$TIBCO_EP_HOME" ]; then
@@ -76,7 +73,7 @@ if [ ! -d "$NODE_INSTALL_PATH" ]; then
 fi
 
 # Install node A in cluster X - administration port set to 5556
-$ADMINISTRATOR username=guest password=cloudfoundry install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=$BUILDTYPE
+$ADMINISTRATOR username=vcap password=cloudfoundry install node $DISCOVERYHOSTS nodedirectory=$NODE_INSTALL_PATH adminport=$ADMIN_PORT $NODE_NAME $SB_APP_FILE $NODE_CONFIG $SUBSTITUTIONS deploydirectories=$APPLIB_PATH:$SB_APP_DIR:$SB_APP_DIR/java-bin buildtype=$BUILDTYPE
 exit_code=$?
 
 if [ $exit_code -ne 0 ]; then
