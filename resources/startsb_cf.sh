@@ -98,7 +98,7 @@ if [ $exit_code -ne 0 ]; then
     exit $exit_code
 else
     #Start the node using the assigned administration port
-    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME start node
+    $ADMINISTRATOR hostname=$HOSTNAME adminport=5556 start node
     exit_code=$?
 
     $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display node
