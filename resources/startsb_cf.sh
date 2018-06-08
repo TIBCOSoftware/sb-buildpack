@@ -48,7 +48,7 @@ if [ ! -z "$NODENAME" ]; then
         DNS_RESULT=$(dig +short $CF_INSTANCE_INDEX.$NODENAME)
         sleep 30
     done
-    POLYGLOT_HOSTNAME="$CF_INSTANCE_INDEX.$NODENAME"
+    NODENAME="$CF_INSTANCE_INDEX.$NODENAME"
   else
     NODE_NAME="nodename=$NODENAME"
   fi
@@ -101,19 +101,17 @@ else
     $ADMINISTRATOR hostname=$HOSTNAME adminport=5556 start node
     exit_code=$?
 
-    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display node
-    $ADMINISTRATOR servicename=0.topologies.apps.internal username=vcap password=cloudfoundry display node
-    $ADMINISTRATOR servicename=1.topologies.apps.internal username=vcap password=cloudfoundry display node
+    $ADMINISTRATOR servicename=$NODENAME display node
 
-    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display cluster
-    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display partition
-    $ADMINISTRATOR servicename=$POLYGLOT_HOSTNAME display engine
+    $ADMINISTRATOR servicename=$NODENAME display cluster
+    $ADMINISTRATOR servicename=$NODENAME display partition
+    $ADMINISTRATOR servicename=$NODENAME display engine
     
     if [ "$exit_code" -eq "0" ]; then
         echo "Application Started."
         while true;do sleep 300; done
     else
-        cat /home/vcap/app/deploy/nodes/$POLYGLOT_HOSTNAME/logs/*.log > /home/vcap/all.log
+        cat /home/vcap/app/deploy/nodes/$NODENAME/logs/*.log > /home/vcap/all.log
         echo "Application failed to start. Retrieve logs at /home/vcap/all.log...you have 2 minutes to do this."
         sleep 120
         exit $exit_code
